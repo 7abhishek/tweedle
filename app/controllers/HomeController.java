@@ -62,7 +62,7 @@ public class HomeController extends Controller {
     TweedleRequestDao tweedleRequestDao;
     public Result index() {
         try {
-            return ok("Tweedle is getting started!!! hifi " + InetAddress.getLocalHost().getCanonicalHostName());
+            return ok("Library " + InetAddress.getLocalHost().getCanonicalHostName());
         } catch (UnknownHostException e) {
             return internalServerError("Some shit happened!!" + e.getMessage());
         }
