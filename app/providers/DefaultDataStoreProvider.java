@@ -22,7 +22,7 @@ public class DefaultDataStoreProvider implements Provider<Datastore>{
     @Override
     public Datastore get() {        
         final Morphia morphia = new Morphia();
-        final Datastore datastore = morphia.createDatastore(new MongoClient( "localhost" , 27017 ), "morphia_example");
+        final Datastore datastore = morphia.createDatastore(new MongoClient("localhost" , 27017 ), "morphia_example");
         datastore.ensureIndexes();
         return datastore;
     }

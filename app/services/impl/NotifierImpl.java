@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
 import play.Configuration;
+import play.libs.F.Promise;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
@@ -51,11 +52,7 @@ public class NotifierImpl implements Notifier {
         stringb.append("&title=Tweedle Message");
         stringb.append("&message="+textMessage);        
         logger.info("json payload : {} ", stringb.toString());
-        CompletionStage<WSResponse> response =  ws.url(url).setContentType("application/x-www-form-urlencoded").post(stringb.toString());
-        CompletionStage<JsonNode> jsonResponse = response.thenApply(res -> {
-            logger.info("notification Response : {} ", res.asJson());
-            return res.asJson();   
-        });
+//        CompletionStage<WSResponse> response =  ws.url(url).setContentType("application/x-www-form-urlencoded").post(stringb.toString());        
     }
 
 }

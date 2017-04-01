@@ -39,12 +39,12 @@ public class ApplicationTimer {
         // When the application starts, register a stop hook with the
         // ApplicationLifecycle object. The code inside the stop hook will
         // be run when the application stops.
-        appLifecycle.addStopHook(() -> {
-            Instant stop = clock.instant();
-            Long runningTime = stop.getEpochSecond() - start.getEpochSecond();
-            Logger.info("ApplicationTimer demo: Stopping application at " + clock.instant() + " after " + runningTime + "s.");
-            return CompletableFuture.completedFuture(null);
-        });
+//        appLifecycle.addStopHook(() -> {
+//            Instant stop = clock.instant();
+//            Long runningTime = stop.getEpochSecond() - start.getEpochSecond();
+//            Logger.info("ApplicationTimer demo: Stopping application at " + clock.instant() + " after " + runningTime + "s.");
+//            return CompletableFuture.completedFuture(null);
+//        });
     }
 
 }
