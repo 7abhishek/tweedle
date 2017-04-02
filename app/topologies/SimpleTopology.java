@@ -70,7 +70,6 @@ public class SimpleTopology implements SimpleTopologyI {
         cluster.submitTopology("SimpleTopology", config, builder.createTopology());
 //        Thread.sleep(120000);
 //        logger.info("shutting down topology SimpleTopology");
-//        cluster.killTopologyWithOpts("SimpleTopology", new KillOptions());
 //        cluster.shutdown();
         return true;
         } catch (Exception e){

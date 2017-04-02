@@ -25,3 +25,6 @@ GET  /sentiment       @controllers.HomeController.sentiment()
 GET  /socket          @controllers.HomeController.socketTest()
 
 GET  /test             @controllers.HomeController.testSocket()
+
+
+GET /tweedles/:userId  @controllers.TweedleController.getTweedles(userId: String)

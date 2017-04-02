@@ -98,9 +98,9 @@ public class HomeController extends Controller {
     }
 
     public Result startStream() {
-        JsonNode requestJson = request().body().asJson();
-        TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);
-        kafkaStreamsService.stream(tweedleRequest);
+//        JsonNode requestJson = request().body().asJson();
+//        TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);
+//        kafkaStreamsService.stream(tweedleRequest);
         // String resultStream =
         // kafkaStreamsService.stream(tweedleRequest).map((k,v) ->
         // v.toString());
@@ -117,7 +117,7 @@ public class HomeController extends Controller {
                 JsonNode json = Json.parse(message);
                 TweedleRequest request = Json.fromJson(json,TweedleRequest.class);
                 logger.info("request : {} ", request);
-                kafkaStreamsService.stream(request);
+                kafkaStreamsService.stream(request, out);
                 out.write("Hello! " + message);
             });
             in.onClose(() -> logger.info("Disconnected"));
