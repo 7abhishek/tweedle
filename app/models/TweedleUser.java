@@ -4,18 +4,22 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author abhishek
  *
  */
 
 @Entity(value = "tweedleuser", noClassnameStored = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TweedleUser {
     @Id
     ObjectId _id;
     String userId;
     String name; 
     String source;
+    String picture;
    
     public ObjectId get_id() {
         return _id;
@@ -40,6 +44,12 @@ public class TweedleUser {
     }
     public void setSource(String source) {
         this.source = source;
+    }
+    public String getPicture() {
+        return picture;
+    }
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
     
     

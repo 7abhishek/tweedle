@@ -50,6 +50,7 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         logger.info("tweedleRequest : {} , bootstrapServers :{}", Json.toJson(tweedleRequest), bootstrapServers);
         String topic = tweedleHelper.getTopicNameForRepubishing(tweedleRequest);
         Properties props = new Properties();
+        int count = 0;
         props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "fetch-response-starvation");
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
@@ -61,16 +62,18 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(props);
         consumer.subscribe(Arrays.asList(topic));
         logger.info("Subscribed to topic : {} ,  {}" , topic, consumer);       
-        while (true) {
+        while (count!=10) {
             logger.info("while true.......");
-           ConsumerRecords<String, Object> records = consumer.poll(Long.MAX_VALUE);
-           //consumer.commitAsync();
+           ConsumerRecords<String, Object> records = consumer.poll(Long.MAX_VALUE);           
            logger.info("ConsumerRecords records : {} ", records);                            
               for (ConsumerRecord<String, Object> record : records) {                
                  logger.info(" record key : {} , record value: {} , record offset : {} ", record.key(), record.value(), record.offset());
                  out.write(record.value().toString());
+                 count = count +1;
+                 Thread.sleep(1000);// introduce artificial delay to test websocket
               }
-        }            
+        } 
+        logger.info("stopping stream.... count : {} ", count);
         } catch (Exception e){
             logger.error("Exception during stream : {}  ", e.getMessage(), e);           
         }
