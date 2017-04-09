@@ -3,7 +3,9 @@
  */
 package dao.impl;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import models.TweedleRequest;
 
@@ -11,6 +13,8 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
+
+import akka.util.Collections;
 
 import com.google.inject.Inject;
 
@@ -44,8 +48,8 @@ public class TweedleRequestDaoImpl extends BasicDAO<TweedleRequest, ObjectId> im
      */
     @Override
     public List<TweedleRequest> getRequestsByUserId(String userId) {
-        // TODO Auto-generated method stub
-        return null;
+        Query<TweedleRequest> query = createQuery().filter("userId", userId);
+        return query != null ? query.asList(): java.util.Collections.EMPTY_LIST;
     }
 
     /* (non-Javadoc)
