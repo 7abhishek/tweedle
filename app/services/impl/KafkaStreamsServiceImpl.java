@@ -3,6 +3,7 @@ package services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.apache.kafka.streams.kstream.KStreamBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
 import play.Play;
@@ -58,21 +60,25 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         props.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, Long.toString(Integer.MAX_VALUE));
         props.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "40000");
         props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); 
-        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); 
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(props);
         consumer.subscribe(Arrays.asList(topic));
         logger.info("Subscribed to topic : {} ,  {}" , topic, consumer);       
-        while (count!=10) {
+        while (count!=20) {
             logger.info("while true.......");
            ConsumerRecords<String, Object> records = consumer.poll(Long.MAX_VALUE);           
            logger.info("ConsumerRecords records : {} ", records);                            
-              for (ConsumerRecord<String, Object> record : records) {                
+              for (ConsumerRecord<String, Object> record : records) {               
                  logger.info(" record key : {} , record value: {} , record offset : {} ", record.key(), record.value(), record.offset());
-                 out.write(record.value().toString());
+                 String jsonString = Json.toJson(record.value()).toString().replaceAll("\\\\","");
+                 logger.info("jsonString : {} ", jsonString);
+                 out.write(jsonString);                 
                  count = count +1;
                  Thread.sleep(1000);// introduce artificial delay to test websocket
               }
         } 
+        consumer.close();
         logger.info("stopping stream.... count : {} ", count);
         } catch (Exception e){
             logger.error("Exception during stream : {}  ", e.getMessage(), e);           

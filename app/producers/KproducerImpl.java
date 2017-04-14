@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import play.Configuration;
+import play.libs.Json;
 
 /**
  * @author abhishek
@@ -47,9 +48,10 @@ public class KproducerImpl implements KProducer {
     }
     
     @Override
-    public void SendMessage(String key, Object message, String topic) {        
+    public void SendMessage(String key, Object message, String topic) {     
+        try{
         logger.info("bootstrap servers : {} ", this.conf.getString("kafka.server.bootstrap.servers.string"));
-        ProducerRecord<String, Object> sendMessage = new ProducerRecord<String, Object>(topic, key, message.toString());
+        ProducerRecord<String, Object> sendMessage = new ProducerRecord<String, Object>(topic, key, Json.toJson(message).toString());
         logger.info("index : {} , strMsg : {} ", key, message.toString());
         Future<RecordMetadata> result = producer.send(sendMessage);
         try {
@@ -58,6 +60,9 @@ public class KproducerImpl implements KProducer {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        }
+        } catch (Exception e) {
+            logger.error("Exception while SendMessage  :{} ",e.getMessage(), e);
         }
     }
 

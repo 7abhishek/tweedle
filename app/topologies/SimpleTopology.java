@@ -5,6 +5,7 @@ package topologies;
 
 import java.util.UUID;
 
+import models.Sentiment;
 import models.TweedleRequest;
 
 import org.apache.storm.Config;
@@ -47,7 +48,8 @@ public class SimpleTopology implements SimpleTopologyI {
         config.setDebug(true);
         config.setMaxSpoutPending(5000);
         config.setMessageTimeoutSecs(60);
-        config.registerSerialization(SentimentAnalyzerServiceImpl.class);        
+        config.registerSerialization(SentimentAnalyzerServiceImpl.class);
+        config.registerSerialization(Sentiment.class);
         logger.info("zookeeper connectionString : {} ", connectionString);
         String zkConnString = connectionString;
         String topic = tweedleHelper.getTopicName(tweedleRequest);
@@ -62,7 +64,7 @@ public class SimpleTopology implements SimpleTopologyI {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("kafka-spout", new KafkaSpout(kafkaSpoutConfig), 1);
         logger.info("TopologyBuilder setSpout : KafkaSpout");
-        builder.setBolt("simple-bolt", new SimpleBolt()).shuffleGrouping("kafka-spout");
+        builder.setBolt("simple-bolt", new SimpleBolt()).shuffleGrouping("kafka-spout");        
         builder.setBolt("aggregator-bolt", new AggregatorBolt(tweedleRequest.getUserId(),tweedleRequest.getTweedle())).shuffleGrouping("simple-bolt");       
         logger.info("TopologyBuilder setBolt : SimpleBolt");
         LocalCluster cluster = new LocalCluster();

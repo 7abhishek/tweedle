@@ -118,10 +118,9 @@ public class HomeController extends Controller {
                 TweedleRequest request = Json.fromJson(json,TweedleRequest.class);
                 logger.info("request : {} ", request);
                 kafkaStreamsService.stream(request, out);
-                out.write("Hello! " + message);
+                out.close();
             });
-            in.onClose(() -> logger.info("Disconnected"));
-            out.write("Hello!");
+            in.onClose(() -> logger.info("Disconnected"));           
         });
     }
 }

@@ -6,6 +6,7 @@ package bolts;
 import java.util.HashMap;
 import java.util.Map;
 
+import models.Sentiment;
 import models.TweedleRequest;
 
 import org.apache.storm.task.OutputCollector;
@@ -37,6 +38,7 @@ public class AggregatorBolt implements IRichBolt {
      */
     private static final long serialVersionUID = 1L;
     private Map<String, Long> sentimentCount;
+    private Sentiment sentimentModel;
     private OutputCollector _collector;
     @Inject
     static TweedleRequestDao tweedleRequestDao;
@@ -56,7 +58,7 @@ public class AggregatorBolt implements IRichBolt {
 
     public AggregatorBolt(String userId, String tweedle) {
         this.userId = userId;
-        this.tweedle = tweedle;
+        this.tweedle = tweedle;          
     }
 
     @Override
@@ -74,14 +76,24 @@ public class AggregatorBolt implements IRichBolt {
     public void execute(Tuple arg0) {
         try {
             Long input = arg0.getLong(0);
-            String sentiment = input > 0 ? "positive" : ((input < 0) ? "negative" : "neutral");
-            Long newCount = sentimentCount.get(sentiment) + 1;
-            sentimentCount.put(sentiment, newCount);
+//            String sentiment = input > 0 ? "positive" : ((input < 0) ? "negative" : "neutral");
+            if(input>0) {
+                sentimentModel.incrementPositive();
+            }
+            if(input==0) {
+                sentimentModel.incrementNeutral();
+            }
+            if(input<0) {
+                sentimentModel.incrementNegative();
+            }            
+//            Long newCount = sentimentCount.get(sentiment) + 1;
+//            sentimentCount.put(sentiment, newCount);
+            
             count = count + 1;
             TweedleRequest tweedleRequest = tweedleRequestDao.getRequestByUserIdAndTweedle(userId, tweedle);
             logger.info("sending sentiment stats to kafka topic: {} count : {}", helper.getTopicNameForRepubishing(tweedleRequest),
-                    sentimentCount.toString());
-            kProducer.SendMessage(count.toString(), sentimentCount, helper.getTopicNameForRepubishing(tweedleRequest));
+                    sentimentModel);
+            kProducer.SendMessage(count.toString(), sentimentModel, helper.getTopicNameForRepubishing(tweedleRequest));
             _collector.ack(arg0);
         } catch (Exception e) {
             logger.error("Exception occurred while aggregating sentiment : {} ", e.getMessage(), e);
@@ -103,6 +115,7 @@ public class AggregatorBolt implements IRichBolt {
         sentimentCount.put("neutral", 0L);
         sentimentCount.put("positive", 0L);
         sentimentCount.put("negative", 0L);
+        sentimentModel = new Sentiment();
     }
 
     /*
