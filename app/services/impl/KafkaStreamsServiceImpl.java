@@ -61,24 +61,26 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         props.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "40000");
         props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); 
         props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+      
         
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(props);
         consumer.subscribe(Arrays.asList(topic));
         logger.info("Subscribed to topic : {} ,  {}" , topic, consumer);       
-        while (count!=20) {
-            logger.info("while true.......");
+        while (count <= 20) {
+            logger.info("while true....... count: {}", count);
            ConsumerRecords<String, Object> records = consumer.poll(Long.MAX_VALUE);           
-           logger.info("ConsumerRecords records : {} ", records);                            
+           logger.info("ConsumerRecords records count: {} ", records.count());                            
               for (ConsumerRecord<String, Object> record : records) {               
                  logger.info(" record key : {} , record value: {} , record offset : {} ", record.key(), record.value(), record.offset());
                  String jsonString = Json.toJson(record.value()).toString().replaceAll("\\\\","");
                  logger.info("jsonString : {} ", jsonString);
                  out.write(jsonString);                 
                  count = count +1;
-                 Thread.sleep(1000);// introduce artificial delay to test websocket
+                 Thread.sleep(500);// introduce artificial delay to test websocket
               }
         } 
         consumer.close();
+        out.close();
         logger.info("stopping stream.... count : {} ", count);
         } catch (Exception e){
             logger.error("Exception during stream : {}  ", e.getMessage(), e);           

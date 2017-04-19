@@ -7,7 +7,7 @@ package models;
  * @author abhishek
  *
  */
-public class Sentiment {
+public class Sentiment {    
     int positive;
     int negative;
     int neutral;

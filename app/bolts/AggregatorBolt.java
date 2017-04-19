@@ -8,6 +8,7 @@ import java.util.Map;
 
 import models.Sentiment;
 import models.TweedleRequest;
+import models.TweetSentiment;
 
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -26,6 +27,7 @@ import util.TweedleHelper;
 import com.google.inject.Inject;
 
 import dao.TweedleRequestDao;
+import dao.TweedleSentimentDao;
 
 /**
  * @author abhishek
@@ -42,6 +44,8 @@ public class AggregatorBolt implements IRichBolt {
     private OutputCollector _collector;
     @Inject
     static TweedleRequestDao tweedleRequestDao;
+    @Inject
+    static TweedleSentimentDao tweedleSentimentDao;
     private String userId;
     private String tweedle;
     private Integer count = 0;
@@ -91,6 +95,10 @@ public class AggregatorBolt implements IRichBolt {
             
             count = count + 1;
             TweedleRequest tweedleRequest = tweedleRequestDao.getRequestByUserIdAndTweedle(userId, tweedle);
+            TweetSentiment sentiment = new TweetSentiment();
+            sentiment.setRequest(tweedleRequest);
+            sentiment.setSentiment(sentimentModel);
+            tweedleSentimentDao.saveTweedleSentiment(sentiment);
             logger.info("sending sentiment stats to kafka topic: {} count : {}", helper.getTopicNameForRepubishing(tweedleRequest),
                     sentimentModel);
             kProducer.SendMessage(count.toString(), sentimentModel, helper.getTopicNameForRepubishing(tweedleRequest));
@@ -115,7 +123,13 @@ public class AggregatorBolt implements IRichBolt {
         sentimentCount.put("neutral", 0L);
         sentimentCount.put("positive", 0L);
         sentimentCount.put("negative", 0L);
-        sentimentModel = new Sentiment();
+        TweedleRequest tweedleRequest = tweedleRequestDao.getRequestByUserIdAndTweedle(userId, tweedle);
+        TweetSentiment sentiment =  tweedleSentimentDao.getTweedleSentiment(tweedleRequest);
+        if(sentiment!=null){
+            sentimentModel = sentiment.getSentiment();
+        } else {
+            sentimentModel = new Sentiment();
+        }
     }
 
     /*

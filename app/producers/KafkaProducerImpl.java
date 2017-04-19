@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import models.TweedleRequest;
+import models.Tweet;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -18,7 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.Configuration;
+import play.libs.F.Promise;
+import play.libs.Json;
 import services.Notifier;
+import topologies.SimpleTopology;
+import topologies.SimpleTopologyI;
 import util.TweedleHelper;
 
 import com.google.inject.Inject;
@@ -39,13 +44,15 @@ public class KafkaProducerImpl implements Kafkaproducer {
     Notifier notifier;
     Configuration conf;
     TweedleHelper tweedleHelper;
+    SimpleTopologyI simpleTopology;
 
     Logger logger = LoggerFactory.getLogger(KafkaProducerImpl.class);
     @Inject
-    public KafkaProducerImpl(Notifier notifier, Configuration conf, TweedleHelper tweedleHelper, KProducer kProducer) {
+    public KafkaProducerImpl(Notifier notifier, Configuration conf, TweedleHelper tweedleHelper, KProducer kProducer, SimpleTopologyI simpleTopology) {
         this.notifier = notifier;
         this.conf = conf;
-        this.tweedleHelper = tweedleHelper;        
+        this.tweedleHelper = tweedleHelper;
+        this.simpleTopology = simpleTopology;
     }
     public Boolean activate(TweedleRequest tweedleRequest) {
         try {
@@ -68,7 +75,7 @@ public class KafkaProducerImpl implements Kafkaproducer {
             logger.info("client trying to connect...");
             String bootstrapServers = this.conf.getString("kafka.server.bootstrap.servers.string");        
             Properties properties = new Properties();
-            Integer retries = 0;
+            Integer retries = 3;
             properties.put("bootstrap.servers", bootstrapServers);
             properties.put("acks", "all");
             properties.put("retries", retries);
@@ -78,14 +85,19 @@ public class KafkaProducerImpl implements Kafkaproducer {
             properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
             properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");            
             Producer<String, Object> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, Object>(properties);
+            producer.send(new ProducerRecord<String, Object>(topic, "0", ""));
+            Promise.promise(() -> simpleTopology.startTopology(tweedleRequest));
             // Do whatever needs to be done with messages
-            for (int msgRead = 0; msgRead < 10; msgRead++) {
+            for (int msgRead = 1; msgRead < 11; msgRead++) {
                 String strMsg = queue.take();
+                Tweet tweet = Json.fromJson(Json.parse(strMsg), Tweet.class);
                 logger.info("index : {} , strMsg : {} ", msgRead, strMsg.toString());
                 ProducerRecord<String, Object> sendMessage = new ProducerRecord<String, Object>(topic, Integer.toString(msgRead), strMsg);
                 logger.info("producer send  :{} ",producer.send(sendMessage));             
-                // logger.info("sending notification now..");
-                // notifier.sendMessage(strMsg);
+               if(tweedleRequest.getNotify()){
+                   logger.info("sending notification now.. : {} ", tweet.getText());
+                   notifier.sendMessage2(tweet.getText());
+               }
             }
             producer.close();
             client.stop();

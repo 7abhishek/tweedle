@@ -3,13 +3,12 @@
  */
 package services.impl;
 
-import java.util.concurrent.CompletionStage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
@@ -28,6 +27,10 @@ public class NotifierImpl implements Notifier {
     
     WSClient ws;
     Configuration conf;
+    public static final String PUSHWOOSH_SERVICE_BASE_URL = "https://cp.pushwoosh.com/json/1.3/";
+    private static final String AUTH_TOKEN = "mftgIIgS1pOTsNGZgaJ03M5D0mV1Tm6eBjSFb1yyAtaHsLjAqtZwdDIdzErLqhxPJJFdI9EokUbFNNv2sOxi";
+    private static final String APPLICATION_CODE = "8A59A-4317A";
+ 
     Logger logger = LoggerFactory.getLogger(NotifierImpl.class);
     @Inject
     public NotifierImpl(WSClient ws, Configuration conf){
@@ -35,6 +38,7 @@ public class NotifierImpl implements Notifier {
         this.conf = conf;
     }
     
+    @Override
     public void sendMessage(String message){
         JsonNode jsonMessage = Json.parse(message);
         String textMessage = jsonMessage.get("text").asText();
@@ -53,6 +57,29 @@ public class NotifierImpl implements Notifier {
         stringb.append("&message="+textMessage);        
         logger.info("json payload : {} ", stringb.toString());
 //        CompletionStage<WSResponse> response =  ws.url(url).setContentType("application/x-www-form-urlencoded").post(stringb.toString());        
+    }
+    
+    @Override
+    public void sendMessage2(String message){
+        String method = "createMessage";
+        String url = PUSHWOOSH_SERVICE_BASE_URL + method;
+        ObjectNode result = Json.newObject();
+        result.put("send_date", "now");
+        result.put("content", message);
+        result.put("link", "http://pushwoosh.com/");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode array = mapper.createArrayNode();
+        array.add(result);
+ 
+        ObjectNode requestObject = Json.newObject();
+        requestObject.put("application", APPLICATION_CODE);
+        requestObject.put("auth", AUTH_TOKEN);
+        requestObject.put("notifications", array);
+        requestObject.put("android_priority",2); 
+        ObjectNode mainRequest = Json.newObject();
+        mainRequest.put("request", requestObject);
+        Promise<WSResponse> response = ws.url(url).setHeader("Content-Type", "application/json").post(mainRequest);
+        logger.info("sendMessage2 response  {} ", response.get(0));
     }
 
 }
