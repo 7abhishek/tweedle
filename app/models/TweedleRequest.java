@@ -15,8 +15,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity(value = "tweedleRequest", noClassnameStored = true)
 public class TweedleRequest {
     @Id
+//<<<<<<< 22ec93839ac9efabd6c49f919c03efed37a4e7ba
     @JsonIgnore
-    ObjectId _id;
+
+    ObjectId _id;//mongo db will have the ObjectId
+
     String userId;
     String tweedle;
     String trackTerms;
