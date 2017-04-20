@@ -57,10 +57,7 @@ public class HomeController extends Controller {
     @Inject
     KafkaStreamsService kafkaStreamsService;
     @Inject
-    Notifier notifier;
-    // @Inject
-    // @Named("wsActor")
-    // ActorRef wsActor;
+    Notifier notifier;    
 
     @Inject
     TweedleRequestDao tweedleRequestDao;
