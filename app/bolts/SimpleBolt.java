@@ -44,9 +44,9 @@ public class SimpleBolt implements IRichBolt {
      */
     @Override
     public void execute(Tuple arg0) {
-        String input = arg0.getString(0);
-        ObjectMapper mapper = new ObjectMapper();
         try {
+            String input = arg0.getString(0);
+            ObjectMapper mapper = new ObjectMapper();            
             Tweet tweet = Json.fromJson(mapper.readTree(input), Tweet.class);            
             logger.info("tweet text : {} ", tweet.getText());
             Long sentiment = sentimentAnalyzer.analyze(tweet.getText());

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import play.Configuration;
 import play.libs.F.Promise;
 import play.libs.Json;
+import services.ControlService;
 import services.Notifier;
 import topologies.SimpleTopology;
 import topologies.SimpleTopologyI;
@@ -45,14 +46,16 @@ public class KafkaProducerImpl implements Kafkaproducer {
     Configuration conf;
     TweedleHelper tweedleHelper;
     SimpleTopologyI simpleTopology;
+    ControlService controlService;
 
     Logger logger = LoggerFactory.getLogger(KafkaProducerImpl.class);
     @Inject
-    public KafkaProducerImpl(Notifier notifier, Configuration conf, TweedleHelper tweedleHelper, KProducer kProducer, SimpleTopologyI simpleTopology) {
+    public KafkaProducerImpl(Notifier notifier, Configuration conf, TweedleHelper tweedleHelper, KProducer kProducer, SimpleTopologyI simpleTopology, ControlService controlService) {
         this.notifier = notifier;
         this.conf = conf;
         this.tweedleHelper = tweedleHelper;
         this.simpleTopology = simpleTopology;
+        this.controlService = controlService;
     }
     public Boolean activate(TweedleRequest tweedleRequest) {
         try {
@@ -86,9 +89,12 @@ public class KafkaProducerImpl implements Kafkaproducer {
             properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");            
             Producer<String, Object> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, Object>(properties);
             producer.send(new ProducerRecord<String, Object>(topic, "0", ""));
+            controlService.saveHbcClient(tweedleRequest, client);
+            controlService.saveKafkaProducer(tweedleRequest, producer);
             Promise.promise(() -> simpleTopology.startTopology(tweedleRequest));
             // Do whatever needs to be done with messages
-            for (int msgRead = 1; msgRead < 11; msgRead++) {
+            int msgRead = 0;
+            while (!client.isDone()) {
                 String strMsg = queue.take();
                 Tweet tweet = Json.fromJson(Json.parse(strMsg), Tweet.class);
                 logger.info("index : {} , strMsg : {} ", msgRead, strMsg.toString());
@@ -98,12 +104,11 @@ public class KafkaProducerImpl implements Kafkaproducer {
                    logger.info("sending notification now.. : {} ", tweet.getText());
                    notifier.sendMessage2(tweet.getText());
                }
+               msgRead  = msgRead +1;
             }
-            producer.close();
-            client.stop();
             return true;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Exception occurred at activate : {}", e.getMessage(), e);  
             return false;
         }
     }

@@ -14,9 +14,11 @@ import producers.KafkaProducerImpl;
 import producers.Kafkaproducer;
 import producers.KproducerImpl;
 import providers.DefaultDataStoreProvider;
+import services.ControlService;
 import services.KafkaStreamsService;
 import services.Notifier;
 import services.SentimentAnalyzerService;
+import services.impl.ControlServiceImpl;
 import services.impl.KafkaStreamsServiceImpl;
 import services.impl.NotifierImpl;
 import services.impl.SentimentAnalyzerServiceImpl;
@@ -71,6 +73,7 @@ public class TweedleModule extends AbstractModule implements AkkaGuiceSupport {
         bind(KafkaStreamsService.class).to(KafkaStreamsServiceImpl.class);
         bind(TweedleRequestDao.class).to(TweedleRequestDaoImpl.class);
         bind(TweedleSentimentDao.class).to(TweedleSentimentDaoImpl.class);
+        bind(ControlService.class).to(ControlServiceImpl.class).asEagerSingleton();
 //        bindActor(MyWebSocketActor.class, "wsActor");
         logger.info("Binding services complete...");
     }

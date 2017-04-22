@@ -61,6 +61,7 @@ public class NotifierImpl implements Notifier {
     
     @Override
     public void sendMessage2(String message){
+        try{
         String method = "createMessage";
         String url = PUSHWOOSH_SERVICE_BASE_URL + method;
         ObjectNode result = Json.newObject();
@@ -79,7 +80,13 @@ public class NotifierImpl implements Notifier {
         ObjectNode mainRequest = Json.newObject();
         mainRequest.put("request", requestObject);
         Promise<WSResponse> response = ws.url(url).setHeader("Content-Type", "application/json").post(mainRequest);
-        logger.info("sendMessage2 response  {} ", response.get(0));
+        response.map(results -> {
+            logger.info("sendMessage2 response : {} ",  results);
+            return results;
+        });
+        } catch (Exception e){
+            logger.error("Exception Occurred at sending push notification : {} ", e.getMessage(), e);
+        }
     }
 
 }

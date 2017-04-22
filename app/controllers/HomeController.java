@@ -6,6 +6,7 @@ import play.libs.Json;
 import play.mvc.*;
 import producers.KafkaProducerImpl;
 import producers.Kafkaproducer;
+import services.ControlService;
 import services.KafkaStreamsService;
 import services.Notifier;
 import services.SentimentAnalyzerService;
@@ -61,6 +62,10 @@ public class HomeController extends Controller {
 
     @Inject
     TweedleRequestDao tweedleRequestDao;
+    
+    @Inject
+    ControlService controlService;
+    
     public Promise<Result> index() {
         try {
             notifier.sendMessage2("Hello");
@@ -128,5 +133,12 @@ public class HomeController extends Controller {
             });
             in.onClose(() -> logger.info("Disconnected"));           
         });
+    }
+    
+    public Promise<Result> stopTweedle() {
+        JsonNode requestJson = request().body().asJson();
+        TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);
+        controlService.stopProducerAndClient(tweedleRequest);
+        return Promise.promise(() -> ok());
     }
 }

@@ -66,7 +66,7 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(props);
         consumer.subscribe(Arrays.asList(topic));
         logger.info("Subscribed to topic : {} ,  {}" , topic, consumer);       
-        while (count <= 20) {
+        while (count <=20) {
             logger.info("while true....... count: {}", count);
            ConsumerRecords<String, Object> records = consumer.poll(Long.MAX_VALUE);           
            logger.info("ConsumerRecords records count: {} ", records.count());                            
@@ -75,13 +75,14 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
                  String jsonString = Json.toJson(record.value()).toString().replaceAll("\\\\","");
                  logger.info("jsonString : {} ", jsonString);
                  out.write(jsonString);                 
-                 count = count +1;
+                 count = count + 1;
                  Thread.sleep(500);// introduce artificial delay to test websocket
               }
         } 
         consumer.close();
+        
         out.close();
-        logger.info("stopping stream.... count : {} ", count);
+        logger.info("stopping stream.... count : {}, {} ", count, consumer.poll(12));
         } catch (Exception e){
             logger.error("Exception during stream : {}  ", e.getMessage(), e);           
         }

@@ -28,3 +28,5 @@ GET  /test             @controllers.HomeController.testSocket()
 
 
 GET /tweedles/:userId  @controllers.TweedleController.getTweedles(userId: String)
+
+POST /stop             @controllers.HomeController.stopTweedle()  

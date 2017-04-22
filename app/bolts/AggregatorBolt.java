@@ -80,7 +80,6 @@ public class AggregatorBolt implements IRichBolt {
     public void execute(Tuple arg0) {
         try {
             Long input = arg0.getLong(0);
-//            String sentiment = input > 0 ? "positive" : ((input < 0) ? "negative" : "neutral");
             if(input>0) {
                 sentimentModel.incrementPositive();
             }
@@ -90,9 +89,6 @@ public class AggregatorBolt implements IRichBolt {
             if(input<0) {
                 sentimentModel.incrementNegative();
             }            
-//            Long newCount = sentimentCount.get(sentiment) + 1;
-//            sentimentCount.put(sentiment, newCount);
-            
             count = count + 1;
             TweedleRequest tweedleRequest = tweedleRequestDao.getRequestByUserIdAndTweedle(userId, tweedle);
             TweetSentiment sentiment = new TweetSentiment();
@@ -117,12 +113,7 @@ public class AggregatorBolt implements IRichBolt {
      * org.apache.storm.task.OutputCollector)
      */
     @Override
-    public void prepare(Map arg0, TopologyContext arg1, OutputCollector arg2) {
-        // TODO Auto-generated method stub
-        sentimentCount = new HashMap<String, Long>();
-        sentimentCount.put("neutral", 0L);
-        sentimentCount.put("positive", 0L);
-        sentimentCount.put("negative", 0L);
+    public void prepare(Map arg0, TopologyContext arg1, OutputCollector arg2) {      
         TweedleRequest tweedleRequest = tweedleRequestDao.getRequestByUserIdAndTweedle(userId, tweedle);
         TweetSentiment sentiment =  tweedleSentimentDao.getTweedleSentiment(tweedleRequest);
         if(sentiment!=null){
