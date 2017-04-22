@@ -30,7 +30,7 @@ public class TweedleRequestDaoImpl extends BasicDAO<TweedleRequest, ObjectId> im
     protected TweedleRequestDaoImpl(Datastore ds) {
         super(ds);       
     }
-
+//normal injection and constructor injection
     /* (non-Javadoc)
      * @see dao.TweedleRequestDao#saveRequest(models.TweedleRequest)
      */
@@ -39,8 +39,11 @@ public class TweedleRequestDaoImpl extends BasicDAO<TweedleRequest, ObjectId> im
     public TweedleRequest saveRequest(TweedleRequest tweedleRequest) {       
         if(getRequestByUserIdAndTweedle(tweedleRequest.getUserId(), tweedleRequest.getTweedle())==null){
             ds.save(tweedleRequest);
+            //morphia- java object relation mapper for mongoDB 
+            //ORM 
         }
         return tweedleRequest;
+        //when ever u save object in a database the return type should be the updated object 
     }
 
     /* (non-Javadoc)

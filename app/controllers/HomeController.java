@@ -82,9 +82,20 @@ public class HomeController extends Controller {
     public Promise<Result> start() {
         try {
             JsonNode requestJson = request().body().asJson();
-            TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);            
+            //asJson - json node form of the request 
+            //request() = method in the framework
+            //request is of type GET or POST or any http requests 
+            //read request content and fetch only the body part
+            TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);
+            //the json body is converted to tweedleRequest model = this is done to ensure correctness of user
+            //supplied data and also its better to convert data to required model and then passed around 
+            //to different components of a service using models.Improvisation we can add validators 
+            //annotations to model to enforce validation such as not null , not empty on fields 
+            //refer javaX bean validation
             tweedleRequestDao.saveRequest(tweedleRequest);
-            Promise.promise(() -> producer.activate(tweedleRequest));          
+            //db operations are present in daoImpl class
+            Promise.promise(() -> producer.activate(tweedleRequest));
+            //gets executed asynchronously in a non blocking        
             return Promise.promise(() -> ok("Started!!"));
         } catch (Exception e) {
             logger.error("Exception at start : {} ", e.getMessage(), e);

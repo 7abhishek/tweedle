@@ -11,12 +11,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @author abhishek
  *
  */
+
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Entity(value = "tweedleRequest", noClassnameStored = true)
 public class TweedleRequest {
-    @Id
-//<<<<<<< 22ec93839ac9efabd6c49f919c03efed37a4e7ba
-    @JsonIgnore
+    @Id//mongo morphia annotation, facilitates saving of the object directly to the DB, using morphia 
+    //we can save the class structure as it is in the database
+    //all the documents in the database will have the same structure as that of the tweedlerequest class
+
+    @JsonIgnore// annotation for de-serialisation, ignore the _id field during de-serialization
+    
 
     ObjectId _id;//mongo db will have the ObjectId
 
