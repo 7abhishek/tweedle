@@ -6,8 +6,7 @@ package models;
 public class Sentiment {    
     int positive;
     int negative;
-    int neutral;
-    String geo;
+    int neutral;   
     
     public Sentiment(){
         this.positive = 0;

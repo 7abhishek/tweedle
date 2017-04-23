@@ -6,6 +6,7 @@ package services.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.twitter.hbc.core.Client;
 
 import models.TweedleRequest;
 import play.api.cache.CacheApi;
+import play.mvc.WebSocket.Out;
 import services.ControlService;
 import util.TweedleHelper;
 
@@ -29,7 +31,8 @@ public class ControlServiceImpl implements ControlService{
     TweedleHelper helper;
     Map<String,  Producer<String, Object>> producerHolder = new HashMap<String, Producer<String,Object>>();
     Map<String,  Client> clientHolder = new HashMap<>();
-    @Inject CacheApi cache;
+    Map<String,  KafkaConsumer<String, Object>> consumerHolder = new HashMap<>(); 
+    Map<String ,Out<String>> websocketHolder = new HashMap<>();
     
     @Override
     public void saveKafkaProducer(TweedleRequest tweetRequest, Producer<String, Object> producer) {    
@@ -52,9 +55,22 @@ public class ControlServiceImpl implements ControlService{
         logger.info("producerHolder : {} ",  this.producerHolder.get(helper.getTopicName(tweetRequest)));
         this.clientHolder.get(helper.getTopicName(tweetRequest)).stop();
         this.producerHolder.get(helper.getTopicName(tweetRequest)).close();
+        this.consumerHolder.get(helper.getTopicName(tweetRequest)).close();
+        this.websocketHolder.get(helper.getTopicName(tweetRequest)).close();
+        //removing the instances after closing.        
+        this.clientHolder.remove(helper.getTopicName(tweetRequest));
+        this.producerHolder.remove(helper.getTopicName(tweetRequest));
+        this.consumerHolder.remove(helper.getTopicName(tweetRequest));
+        this.consumerHolder.remove(helper.getTopicName(tweetRequest));
         } catch(Exception e){
             logger.error("Exception occurred during stoping tweedle for : {} : {}", tweetRequest ,e.getMessage(),e);
         }
+    }
+    
+    @Override
+    public void saveConsumer(TweedleRequest tweetRequest, KafkaConsumer<String, Object> consumer, Out<String> out){
+        this.consumerHolder.put(helper.getTopicName(tweetRequest),consumer);
+        this.websocketHolder.put(helper.getTopicName(tweetRequest), out);
     }
 
 }

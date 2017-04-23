@@ -27,10 +27,11 @@ public class TweedleSentimentDaoImpl extends BasicDAO<TweetSentiment, ObjectId> 
     public TweetSentiment saveTweedleSentiment(TweetSentiment sentiment) {
         Query<TweetSentiment> updateQuery  = createQuery();
         updateQuery.filter("request", sentiment.getRequest());
+        @SuppressWarnings("deprecation")
         UpdateOperations<TweetSentiment> ops = ds
                 .createUpdateOperations(TweetSentiment.class)
                 .set("sentiment", sentiment.getSentiment());
-        ds.update(updateQuery, ops);        
+        ds.update(updateQuery, ops, true);        
         return sentiment;
         
     }

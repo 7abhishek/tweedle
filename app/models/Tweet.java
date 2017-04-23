@@ -1,11 +1,15 @@
 package models;
 
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Id;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Tweet {
-
+@Id
+ObjectId _id;
 @JsonProperty("created_at")
 private String createdAt;
 @JsonProperty("id")
@@ -24,6 +28,15 @@ private Object geo;
 private Object coordinates;
 @JsonProperty("place")
 private Object place;
+
+
+public ObjectId get_id() {
+    return _id;
+}
+
+public void set_id(ObjectId _id) {
+    this._id = _id;
+}
 
 @JsonProperty("created_at")
 public String getCreatedAt() {

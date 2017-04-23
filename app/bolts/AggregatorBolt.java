@@ -9,6 +9,7 @@ import java.util.Map;
 import models.Sentiment;
 import models.TweedleRequest;
 import models.TweetSentiment;
+import play.libs.Json;
 
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -90,6 +91,7 @@ public class AggregatorBolt implements IRichBolt {
             TweetSentiment sentiment = new TweetSentiment();
             sentiment.setRequest(tweedleRequest);
             sentiment.setSentiment(sentimentModel);
+            logger.info("saving TweedleSentiment : {} ", Json.toJson(sentiment));
             tweedleSentimentDao.saveTweedleSentiment(sentiment);
             logger.info("sending sentiment stats to kafka topic: {} count : {}", helper.getTopicNameForRepubishing(tweedleRequest),
                     sentimentModel);

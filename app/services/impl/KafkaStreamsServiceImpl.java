@@ -28,6 +28,7 @@ import com.google.inject.Inject;
 import play.Play;
 import play.libs.Json;
 import play.mvc.WebSocket.Out;
+import services.ControlService;
 import services.KafkaStreamsService;
 import util.TweedleHelper;
 
@@ -37,6 +38,7 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
     String bootstrapServers = Play.application().configuration().getString("kafka.server.bootstrap.servers.string");
     String zooperKeeper =  Play.application().configuration().getString("zookeeper.server.connection");    
     @Inject TweedleHelper tweedleHelper;
+    @Inject ControlService controlService;
    
    
     /* (non-Javadoc)
@@ -55,14 +57,15 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, Long.toString(Integer.MAX_VALUE));
         props.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "40000");
-        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); 
+        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true"); //this config enables auto committing of the messages [Exactly Once delivery semantics] 
         props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
       
         
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(props);
         consumer.subscribe(Arrays.asList(topic));
+        controlService.saveConsumer(tweedleRequest, consumer, out);
         logger.info("Subscribed to topic : {} ,  {}" , topic, consumer);       
-        while (count <=20) {
+        while (true) {
             logger.info("while true....... count: {}", count);
            ConsumerRecords<String, Object> records = consumer.poll(Long.MAX_VALUE);           
            logger.info("ConsumerRecords records count: {} ", records.count());                            
@@ -74,11 +77,7 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
                  count = count + 1;
                  Thread.sleep(500);// introduce artificial delay to test websocket
               }
-        } 
-        consumer.close();
-        
-        out.close();
-        logger.info("stopping stream.... count : {}, {} ", count, consumer.poll(12));
+        }        
         } catch (Exception e){
             logger.error("Exception during stream : {}  ", e.getMessage(), e);           
         }

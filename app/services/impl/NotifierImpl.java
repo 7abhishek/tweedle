@@ -18,7 +18,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 import services.Notifier;
-s
+
 public class NotifierImpl implements Notifier {
     
     WSClient ws;
