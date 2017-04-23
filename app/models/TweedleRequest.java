@@ -7,12 +7,11 @@ import org.mongodb.morphia.annotations.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 @JsonIgnoreProperties(ignoreUnknown=true)
 @Entity(value = "tweedleRequest", noClassnameStored = true)
 public class TweedleRequest {
+    @JsonIgnore   
     @Id
-    @JsonIgnore
     ObjectId _id;//mongo db will have the ObjectId
 
     String userId;
