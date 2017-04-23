@@ -9,10 +9,6 @@ import com.twitter.hbc.core.Client;
 
 import models.TweedleRequest;
 
-/**
- * @author abhishek
- *
- */
 public interface ControlService {
           public void saveKafkaProducer(TweedleRequest tweetRequest,Producer<String, Object> producer);
           public void saveHbcClient(TweedleRequest tweetRequest, Client client);

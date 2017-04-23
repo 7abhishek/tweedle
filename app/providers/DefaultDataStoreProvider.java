@@ -10,10 +10,6 @@ import com.google.inject.Provider;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
-/**
- * @author abhishek
- *
- */
 public class DefaultDataStoreProvider implements Provider<Datastore>{
 
     /* (non-Javadoc)

@@ -6,10 +6,6 @@ import org.mongodb.morphia.annotations.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * @author abhishek
- *
- */
 
 @Entity(value = "tweedleuser", noClassnameStored = true)
 @JsonIgnoreProperties(ignoreUnknown = true)

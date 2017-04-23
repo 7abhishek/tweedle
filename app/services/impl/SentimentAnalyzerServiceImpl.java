@@ -27,15 +27,8 @@ import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.util.CoreMap;
 import services.SentimentAnalyzerService;
 
-/**
- * @author abhishek
- *
- */
 public class SentimentAnalyzerServiceImpl implements SentimentAnalyzerService , Serializable {
-
-    /**
-     * 
-     */
+    
     private static final long serialVersionUID = 1L;
     org.slf4j.Logger logger  = LoggerFactory.getLogger(SentimentAnalyzerServiceImpl.class);
     /* (non-Javadoc)

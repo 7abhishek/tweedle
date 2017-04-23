@@ -16,10 +16,6 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-/**
- * @author abhishek
- *
- */
 public class LoginController extends Controller{
 
     Logger logger = LoggerFactory.getLogger(LoginController.class);

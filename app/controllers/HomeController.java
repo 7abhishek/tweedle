@@ -66,10 +66,9 @@ public class HomeController extends Controller {
     @Inject
     ControlService controlService;
     
-    public Promise<Result> index() {
-        try {
-            notifier.sendMessage2("Hello");
-            return Promise.promise(() -> ok("Library " + InetAddress.getLocalHost().getCanonicalHostName()));
+    public Promise<Result> health() {
+        try {            
+            return Promise.promise(() -> ok("Tweedle Service is  Healthy"));
         } catch (Exception e) {
             return Promise.promise(() -> internalServerError("Exception Occurred , Please contact System administrator"));
         }

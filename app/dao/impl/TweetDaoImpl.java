@@ -14,10 +14,7 @@ import com.google.inject.Inject;
 import dao.TweetDao;
 import models.Tweet;
 
-/**
- * @author abhishek
- *
- */
+
 public class TweetDaoImpl extends BasicDAO<Tweet, ObjectId> implements TweetDao{
 
     private Logger logger = LoggerFactory.getLogger(TweetDaoImpl.class);

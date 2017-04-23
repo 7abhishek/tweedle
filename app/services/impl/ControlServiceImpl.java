@@ -19,10 +19,6 @@ import play.api.cache.CacheApi;
 import services.ControlService;
 import util.TweedleHelper;
 
-/**
- * @author abhishek
- *
- */
 @Singleton
 public class ControlServiceImpl implements ControlService{
     

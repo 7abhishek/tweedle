@@ -18,11 +18,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSResponse;
 import services.Notifier;
-
-/**
- * @author abhishek
- *
- */
+s
 public class NotifierImpl implements Notifier {
     
     WSClient ws;
@@ -39,28 +35,7 @@ public class NotifierImpl implements Notifier {
     }
     
     @Override
-    public void sendMessage(String message){
-        JsonNode jsonMessage = Json.parse(message);
-        String textMessage = jsonMessage.get("text").asText();
-        logger.info("NotifierImpl sendMessage");
-        String url = conf.getString("pushover.sendmessage.url");
-        JsonNode node = Json.newObject().put("token", conf.getString("pushover.token"))
-        .put("user", conf.getString("pushover.user"))
-        .put("device", conf.getString("pushover.device")) 
-        .put("title", "Tweedle Message")
-        .put("message", textMessage);      
-        StringBuilder stringb = new StringBuilder(); 
-        stringb.append("token="+conf.getString("pushover.token"));
-        stringb.append("&user="+conf.getString("pushover.user"));
-        stringb.append("&device="+conf.getString("pushover.device"));
-        stringb.append("&title=Tweedle Message");
-        stringb.append("&message="+textMessage);        
-        logger.info("json payload : {} ", stringb.toString());
-//        CompletionStage<WSResponse> response =  ws.url(url).setContentType("application/x-www-form-urlencoded").post(stringb.toString());        
-    }
-    
-    @Override
-    public void sendMessage2(String message){
+    public void sendPushNotification(String message){
         try{
         String method = "createMessage";
         String url = PUSHWOOSH_SERVICE_BASE_URL + method;

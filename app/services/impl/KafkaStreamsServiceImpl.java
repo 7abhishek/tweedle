@@ -31,10 +31,6 @@ import play.mvc.WebSocket.Out;
 import services.KafkaStreamsService;
 import util.TweedleHelper;
 
-/**
- * @author abhishek
- *
- */
 public class KafkaStreamsServiceImpl implements KafkaStreamsService{
 
     Logger logger = LoggerFactory.getLogger(KafkaStreamsServiceImpl.class);

@@ -3,14 +3,11 @@
  */
 package models;
 
-/**
- * @author abhishek
- *
- */
 public class Sentiment {    
     int positive;
     int negative;
     int neutral;
+    String geo;
     
     public Sentiment(){
         this.positive = 0;

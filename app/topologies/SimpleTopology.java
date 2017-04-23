@@ -29,10 +29,6 @@ import util.TweedleHelper;
 import bolts.AggregatorBolt;
 import bolts.SimpleBolt;
 
-/**
- * @author abhishek
- *
- */
 public class SimpleTopology implements SimpleTopologyI {
 
      private Logger logger = LoggerFactory.getLogger(SimpleTopology.class);    

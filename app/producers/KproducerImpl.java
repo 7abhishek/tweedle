@@ -18,10 +18,7 @@ import com.google.inject.Inject;
 import play.Configuration;
 import play.libs.Json;
 
-/**
- * @author abhishek
- *
- */
+
 public class KproducerImpl implements KProducer {
 
     Configuration conf;

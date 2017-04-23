@@ -36,10 +36,8 @@ import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
-/**
- * @author abhishek
- *
- */
+import dao.TweetDao;
+
 public class KafkaProducerImpl implements Kafkaproducer {
 
     Notifier notifier;
@@ -47,15 +45,17 @@ public class KafkaProducerImpl implements Kafkaproducer {
     TweedleHelper tweedleHelper;
     SimpleTopologyI simpleTopology;
     ControlService controlService;
+    TweetDao tweetDao;
 
     Logger logger = LoggerFactory.getLogger(KafkaProducerImpl.class);
     @Inject
-    public KafkaProducerImpl(Notifier notifier, Configuration conf, TweedleHelper tweedleHelper, KProducer kProducer, SimpleTopologyI simpleTopology, ControlService controlService) {
+    public KafkaProducerImpl(Notifier notifier, Configuration conf, TweedleHelper tweedleHelper, KProducer kProducer, SimpleTopologyI simpleTopology, ControlService controlService,TweetDao tweetDao) {
         this.notifier = notifier;
         this.conf = conf;
         this.tweedleHelper = tweedleHelper;
         this.simpleTopology = simpleTopology;
         this.controlService = controlService;
+        this.tweetDao = tweetDao;
     }
     public Boolean activate(TweedleRequest tweedleRequest) {
         try {
@@ -97,12 +97,13 @@ public class KafkaProducerImpl implements Kafkaproducer {
             while (!client.isDone()) {
                 String strMsg = queue.take();
                 Tweet tweet = Json.fromJson(Json.parse(strMsg), Tweet.class);
+                tweetDao.saveTweet(tweet);
                 logger.info("index : {} , strMsg : {} ", msgRead, strMsg.toString());
                 ProducerRecord<String, Object> sendMessage = new ProducerRecord<String, Object>(topic, Integer.toString(msgRead), strMsg);
                 logger.info("producer send  :{} ",producer.send(sendMessage));             
                if(tweedleRequest.getNotify()){
                    logger.info("sending notification now.. : {} ", tweet.getText());
-                   notifier.sendMessage2(tweet.getText());
+                   notifier.sendPushNotification(tweet.getText());
                }
                msgRead  = msgRead +1;
             }

@@ -29,10 +29,6 @@ import com.google.inject.Inject;
 import dao.TweedleRequestDao;
 import dao.TweedleSentimentDao;
 
-/**
- * @author abhishek
- *
- */
 public class AggregatorBolt implements IRichBolt {
 
     /**

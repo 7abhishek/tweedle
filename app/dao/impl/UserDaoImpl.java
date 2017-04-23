@@ -12,10 +12,7 @@ import com.google.inject.Inject;
 import models.TweedleUser;
 import dao.UserDao;
 
-/**
- * @author abhishek
- *
- */
+
 public class UserDaoImpl extends BasicDAO<TweedleUser,ObjectId> implements UserDao {
 
     

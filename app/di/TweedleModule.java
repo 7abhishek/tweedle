@@ -41,16 +41,13 @@ import com.mongodb.MongoClient;
 
 import dao.TweedleRequestDao;
 import dao.TweedleSentimentDao;
+import dao.TweetDao;
 import dao.UserDao;
 import dao.impl.TweedleRequestDaoImpl;
 import dao.impl.TweedleSentimentDaoImpl;
+import dao.impl.TweetDaoImpl;
 import dao.impl.UserDaoImpl;
 import models.TweetSentiment;
-
-/**
- * @author abhishek
- *
- */
 public class TweedleModule extends AbstractModule implements AkkaGuiceSupport {
 
     /* (non-Javadoc)
@@ -74,7 +71,7 @@ public class TweedleModule extends AbstractModule implements AkkaGuiceSupport {
         bind(TweedleRequestDao.class).to(TweedleRequestDaoImpl.class);
         bind(TweedleSentimentDao.class).to(TweedleSentimentDaoImpl.class);
         bind(ControlService.class).to(ControlServiceImpl.class).asEagerSingleton();
-//        bindActor(MyWebSocketActor.class, "wsActor");
+        bind(TweetDao.class).to(TweetDaoImpl.class);
         logger.info("Binding services complete...");
     }
 }
