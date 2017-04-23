@@ -10,7 +10,6 @@ GET     /health                           @controllers.HomeController.health
 #GET     /message                    @controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
-//gets generated as a part of the project
 GET     /assets/*file  controllers.Assets.versioned(path="/public", file: Asset)
 
 OPTIONS  /*path			controllers.HomeController.options(path)
@@ -32,4 +31,4 @@ GET /tweedles/:userId  @controllers.TweedleController.getTweedles(userId: String
 
 POST /stop             @controllers.HomeController.stopTweedle()  
 
-POST /tweedle             @controllers.TweedleController.saveTweedle()
+POST /tweedle          @controllers.TweedleController.saveTweedle()

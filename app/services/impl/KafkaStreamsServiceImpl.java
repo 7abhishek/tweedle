@@ -57,7 +57,7 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, Long.toString(Integer.MAX_VALUE));
         props.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "40000");
-        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true"); //this config enables auto committing of the messages [Exactly Once delivery semantics] 
+        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); //this config enables auto committing of the messages [Atleast Once delivery semantics] 
         props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
       
         

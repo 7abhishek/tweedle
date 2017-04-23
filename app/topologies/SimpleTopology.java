@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import play.Play;
+import services.ControlService;
 import services.impl.SentimentAnalyzerServiceImpl;
 import util.TweedleHelper;
 import bolts.AggregatorBolt;
@@ -34,6 +35,7 @@ public class SimpleTopology implements SimpleTopologyI {
      private Logger logger = LoggerFactory.getLogger(SimpleTopology.class);    
      private String connectionString = Play.application().configuration().getString("zookeeper.server.connection");
      @Inject TweedleHelper tweedleHelper;
+     @Inject ControlService controlService;
 
     public Boolean startTopology(TweedleRequest tweedleRequest) {
         try {
@@ -66,9 +68,7 @@ public class SimpleTopology implements SimpleTopologyI {
         LocalCluster cluster = new LocalCluster();
         logger.info("Submitting topology SimpleTopology");
         cluster.submitTopology("SimpleTopology", config, builder.createTopology());
-//        Thread.sleep(120000);
-//        logger.info("shutting down topology SimpleTopology");
-//        cluster.shutdown();
+        controlService.saveStormCluster(tweedleRequest, cluster);
         return true;
         } catch (Exception e){
             logger.error("Exception Occurred  : {} ", e.getMessage(), e);
