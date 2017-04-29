@@ -59,17 +59,17 @@ public class ControlServiceImpl implements ControlService{
         this.clientHolder.get(helper.getTopicName(tweetRequest)).stop();
         logger.info("Stopping kafka producer");
         this.producerHolder.get(helper.getTopicName(tweetRequest)).close();
-        logger.info("Stopping kafka consumer");
-        this.consumerHolder.get(helper.getTopicName(tweetRequest)).close();
-        logger.info("Stopping websocket connection");
-        this.websocketHolder.get(helper.getTopicName(tweetRequest)).close();
+//        logger.info("Stopping kafka consumer");
+//       this.consumerHolder.get(helper.getTopicName(tweetRequest)).close();
+//        logger.info("Stopping websocket connection");
+        //this.websocketHolder.get(helper.getTopicName(tweetRequest)).close();
         logger.info("Stopping Storm topology");
         this.stormClusterHolder.get(helper.getTopicName(tweetRequest)).shutdown();
         //removing the instances after closing.        
         this.clientHolder.remove(helper.getTopicName(tweetRequest));
         this.producerHolder.remove(helper.getTopicName(tweetRequest));
         this.consumerHolder.remove(helper.getTopicName(tweetRequest));
-        this.consumerHolder.remove(helper.getTopicName(tweetRequest));
+       // this.websocketHolder.remove(helper.getTopicName(tweetRequest));
         this.stormClusterHolder.remove(helper.getTopicName(tweetRequest));
         } catch(Exception e){
             logger.error("Exception occurred during stoping tweedle for : {} : {}", tweetRequest ,e.getMessage(),e);

@@ -59,6 +59,7 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
         props.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, "40000");
         props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); //this config enables auto committing of the messages [Atleast Once delivery semantics] 
         props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.setProperty(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, "3"); //Retry Mechanism, value=3
       
         
         KafkaConsumer<String, Object> consumer = new KafkaConsumer<String, Object>(props);
@@ -73,9 +74,13 @@ public class KafkaStreamsServiceImpl implements KafkaStreamsService{
                  logger.info(" record key : {} , record value: {} , record offset : {} ", record.key(), record.value(), record.offset());
                  String jsonString = Json.toJson(record.value()).toString().replaceAll("\\\\","");
                  logger.info("jsonString : {} ", jsonString);
-                 out.write(jsonString);                 
+                 try{
+                     out.write(jsonString);
+                 } catch(Exception e){
+                     logger.error("Exception while wrting to websocket : {}", e.getMessage(),e);
+                 }
                  count = count + 1;
-                 Thread.sleep(500);// introduce artificial delay to test websocket
+                 Thread.sleep(400);// introduce artificial delay of 0.2s to websocket
               }
         }        
         } catch (Exception e){
