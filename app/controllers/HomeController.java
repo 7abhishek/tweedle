@@ -74,6 +74,9 @@ public class HomeController extends Controller {
         }
     }
 
+    /*
+     *  return 200 OK for any OPTIONS call.
+     */
     public Result options(String path) {
         return ok();
     }
@@ -93,7 +96,7 @@ public class HomeController extends Controller {
             //refer javaX bean validation
             tweedleRequestDao.saveRequest(tweedleRequest);
             //db operations are present in daoImpl class
-            Promise.promise(() -> producer.activate(tweedleRequest));
+            Promise.promise(() -> producer.activate(tweedleRequest));           
             //gets executed asynchronously in a non blocking        
             return Promise.promise(() -> ok("Started!!"));
         } catch (Exception e) {
@@ -103,6 +106,9 @@ public class HomeController extends Controller {
 
     }
 
+    /*
+     *  Test Method to test Sentiment of a random String
+     */
     public Result sentiment() {
         try {
             logger.info("HomeController sentiment : {} ", sentimentService.analyze("hello, how are you ?, the sun shines bright today."));
@@ -111,20 +117,6 @@ public class HomeController extends Controller {
             logger.error("Exception at start : {} ", e.getMessage(), e);
             return internalServerError("Some shit happened!!" + e.getMessage());
         }
-    }
-
-    public Result startStream() {
-//        JsonNode requestJson = request().body().asJson();
-//        TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);
-//        kafkaStreamsService.stream(tweedleRequest);
-        // String resultStream =
-        // kafkaStreamsService.stream(tweedleRequest).map((k,v) ->
-        // v.toString());
-        return ok();
-    }
-
-    public WebSocket<String> socketTest() {
-        return WebSocket.withActor(MyWebSocketActor::props);
     }
 
     public WebSocket<String> testSocket() {
@@ -141,11 +133,11 @@ public class HomeController extends Controller {
                     logger.error("Exception Occurred during streaming Sentiments : {}", exception.getMessage(), exception);
                 }
             });
-            in.onClose(() -> logger.info("Disconnected"));           
+            in.onClose(() -> logger.info("Disconnected"));            
         });
     }
     
-    public Promise<Result> stopTweedle() {
+    public Promise<Result> stopTweedle() {        
         JsonNode requestJson = request().body().asJson();
         TweedleRequest tweedleRequest = Json.fromJson(requestJson, TweedleRequest.class);
         controlService.stopProducerAndClient(tweedleRequest);

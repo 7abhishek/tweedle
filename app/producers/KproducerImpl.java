@@ -32,7 +32,7 @@ public class KproducerImpl implements KProducer {
         this.conf = conf;
         String bootstrapServers = this.conf.getString("kafka.server.bootstrap.servers.string");        
         Properties properties = new Properties();
-        Integer retries = 0;
+        Integer retries = 3; // Retry Mechanism, value = 3
         properties.put("bootstrap.servers", bootstrapServers);
         properties.put("acks", "all");
         properties.put("retries", retries);

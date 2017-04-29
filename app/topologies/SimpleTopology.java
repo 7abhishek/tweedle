@@ -56,11 +56,13 @@ public class SimpleTopology implements SimpleTopologyI {
         SpoutConfig kafkaSpoutConfig = new SpoutConfig(hosts, topic, "/"+topic, UUID.randomUUID().toString());
         kafkaSpoutConfig.bufferSizeBytes = 1024 * 1024 * 4;
         kafkaSpoutConfig.fetchSizeBytes = 1024 * 1024 * 4;
-        kafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.EarliestTime();
+        kafkaSpoutConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
         kafkaSpoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+        kafkaSpoutConfig.retryLimit =3;    // Retry Mechanism, value = 3    
         logger.info("setting Scheme for kafkaSpoutConfig : {} ", kafkaSpoutConfig);
         TopologyBuilder builder = new TopologyBuilder();
-        builder.setSpout("kafka-spout", new KafkaSpout(kafkaSpoutConfig), 1);
+        KafkaSpout kafkaSpout = new KafkaSpout(kafkaSpoutConfig);        
+        builder.setSpout("kafka-spout", kafkaSpout, 1);
         logger.info("TopologyBuilder setSpout : KafkaSpout");
         builder.setBolt("simple-bolt", new SimpleBolt()).shuffleGrouping("kafka-spout");        
         builder.setBolt("aggregator-bolt", new AggregatorBolt(tweedleRequest.getUserId(),tweedleRequest.getTweedle())).shuffleGrouping("simple-bolt");       

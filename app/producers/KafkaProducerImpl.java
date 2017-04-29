@@ -90,7 +90,7 @@ public class KafkaProducerImpl implements Kafkaproducer {
             //default values from kafka documentation
             properties.put("bootstrap.servers", bootstrapServers);
             properties.put("acks", "all");
-            properties.put("retries", retries);
+            properties.put("retries", retries); // Retry Mechanism, value = 3
             properties.put("batch.size", 16384);
             properties.put("linger.ms", 1);
             properties.put("buffer.memory", 33554432);
